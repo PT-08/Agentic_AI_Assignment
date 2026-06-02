@@ -1,0 +1,255 @@
+Step - 1 
+
+
+Python:
+https://cognizant.udemy.com/course/complete-python-bootcamp/
+
+
+
+
+
+Course link
+
+Phase 1 - https://drive.google.com/drive/folders/1HvzrqVoLk6yP9kAMQo8y2hdDDkiCqZCX?usp=sharing
+
+
+
+Github
+sriramancr/cts_files: All class files
+
+
+Create an agent capture_household_appliances that captures
+
+1. ACs,
+- First ask if user has an AC (column - has_ac, yes - 1, no - 0) , if yes ask for
+-- number of AC's (column - num_ac_units, type number,)
+-- AC start rating - assume the same rating for all AC's (column - ac_start_rating, type number, max value 5)
+-- Average AC usage per day - Average usage per AC (column - ac_usage_hrs_per_day, type number, max 24)
+
+2. Fans
+number of fans( column- num_ceiling_fans, type number)
+
+3. Water heater 
+- Water heater type (Column - water_heater_type, type string, possible values - "Solar + Backup", " Electric Geyser", "Heat Pump", "None"
+- If water heater type is None, add 0 to "water_heater_capacity_L" column, "water_heater_usage_hrs_per_day" column
+- If water heater type is not "None"
+-- Water heater capacity in litres (column - water_heater_capacity_L, type number, max 50 )
+-- Average water heater usage hours per day - (column water_heater_usage_hrs_per_day, type float, max 24)
+
+4. Refrigerator
+- Ask if fridge is present (Column - has_refrigerator, if yes - 1, no - 0)
+- If no add 0 to "fridge_capacity_L", "fridge_star_rating" columns
+- If yes, ask for 
+-- Fridge Capacity - Average capacity of the all the fridges present (column -fridge_capacity_L, type number, max 1000)
+-- Fridge star rating - Average star rating for all the fridges (column - fridge_star_rating, type number, max value 5)
+
+5. Washing machine
+Ask if Washing machine is present (Column - has_washing_machine, if yes - 1, no - 0) - If no add None to "washing_machine_type", and 0 to"washing_cycles_per_week" columns - If yes, ask for -- Washing machine type - (column -washing_machine_type, type string, possible values - "Top Load", "Semi-Automatic") -- Washing cycles per week - Average washing cycles per week (column - washing_cycles_per_week, type number)
+
+
+
+6. Computer
+
+Ask  for Count of computers (column: num_computers)
+If num_computers > 0 ask for average usage of computers per day (column:computer_usage_hrs_per_day).
+Maximum of 24 hours and the value should be 0 if num_computers is 0
+
+7. TV
+Ask for num_tvs
+if num_tvs > 0 Ask for tv_screen_size_inch 
+if num_tvs > 0 Ask for tv_usage_hrs_per_day (maximum is 24hrs)
+if num_tvs == 0 tv_screen_size, tv_usage_hrs_per_day should have 0
+
+8. Dish washer
+Ask if Dish washer is present (Column - has_dishwasher, if yes - 1, no - 0) -
+-- If yes, ask for dishwasher_cycles_per_week
+--If no, make dishwasher_cycles_per_week = 0
+
+9. Microwave
+Ask if they have microwave - Yes/No 
+-- If yes, has_microwave = 1
+--If no, has_microwave = 0
+
+(count, star rating, usage hours), fans, water heater type, refrigerator, washing machine, microwave, dishwasher, TVs, and computers.
+ 
+
+
+
+Assess Building Envelope — Note insulation quality, window type, and roof type, which affect heating and cooling loads.
+Create an agent that asks for user inputs for the following, use the attached agents for reference
+
+Ask for insulation quality
+
+column name - insulation_quality
+-Possible values - 'Excellent', 'Good', 'Average', 'Poor'
+
+Ask for window type
+-column name - window_type
+
+Possible values - 'Single Pane', 'Double Pane, 'Triple Pane'
+
+Ask for roof type
+-column name - roof_type
+
+Possible values - 'Sloped Tiled', 'Flat RCC','Green Roof', 'Insulated RCC', 'Sloped Tiled'
+
+These are mandatory fields - validate accordingly - empty or none is not valid
+Add the column data to state.profile_data
+
+
+
+Renewable energy agent
+Create an agent that asks for user inputs for the following, use the attached agents for reference
+
+1. ASk if solar panels are installed (column "has_solar_panels" - if yes 1, if no 0), if no add 0 to column solar_capacity_kWp
+- If yes, ask for Solar capacity in kWp - (column - solar_capacity_kWp, type number)
+
+2. Ask if battery storage is installed (column "has_battery_storage"- if yes 1, if no 0), if no add 0 to column battery_capacity_kWh - If yes, ask for Battery capacity in kWh - (column - battery_capacity_kWh, type number)
+
+Add the column data to state.profile_data
+
+
+Agent 6. Prompt
+
+For the following applicance information, Write a agent that calculates energy consumption in kwh for each applicance using the information provided.
+
+I)AC - if has_ac is 1 (yes) - calculate energy from 
+1. No of ac units(num_ac_units)
+2. Average star rating (ac_start_rating)
+3. Average Usage hours per day (ac_usage_hrs_per_day)
+
+
+II) Ceiling fans - (num_ceiling_fans), calculate energy for the number of fans that runs for 15 hrs a day
+
+III) Water heater - calculate if water_heater_type is not None. Calculate energy from
+1. Water heater type(water_heater_type)
+2. Water heater capacity in litres(water_heater_capacity_L)
+3.Average usage hours per day(water_heater_usage_hrs_per_day)
+
+IV) Refrigerator - calculate if has_refrigerator is 1, else return 0
+1. fridge capacity in litres(fridge_capacity_L)
+2. Star rating (fridge_star_rating)
+
+V) Microwave - if has_microwave is 1, estimate how much it would need to run a hour a day
+
+VI)Dishwasher - if has_dishwasher is 1,calculate using
+1. dishwasher cycles per week (dishwasher_cycles_per_week)
+
+VII) Washing Machine - if has_washing_machine is 1, calculate using
+1. Washing machine type (washing_machine_type)
+2. Cycles per week(washing_machine_cycles_per_week)
+
+VIII) TVs - if num_tvs is greater than 1, calculate using the following
+1. number of tvs (num_tvs)
+2. TV screen size in inches (tv_screen_size_inch)
+3. Averge usage per day(tv_usage_hrs_per_day)
+
+IX) Computers - if num_computers is greater than 1, calculate using the following 1. number of computers(num_computers) 3. Average usage per day(computer_usage_hrs_per_day)
+
+Estimate Gross Energy Consumption — Compute appliance-level energy usage (Watts × hours) and aggregate into a daily kWh figure. Make fair assumption on each appliance's energy usage per hour and make the calculation because we don't have the information of the energy consumption per hour for any of the appliances. ALso for any other assumptions you need to make, report back those values in the response. Make fair and real-world close assumptions only.
+
+Refer to the agents attached
+
+Assumptions used for 6 agent
+
+AC: 1.5 kW per unit for 1-star down to 1.0 kW per unit for 5-star
+
+Ceiling fan: 65 W per fan for 15 hours/day
+
+Water heater:
+
+Solar + Backup: 1.5 kW baseline
+
+Electric Geyser: 3.0 kW baseline
+
+Heat Pump: 1.2 kW baseline
+
+Scaled by capacity relative to 25 L
+
+Refrigerator: 0.85–0.45 kWh per 100 L per day based on star rating
+
+Microwave: 1.2 kW for 1 hour/day
+
+Dishwasher: 1.5 kWh per cycle
+
+Washing machine:
+
+Top Load: 1.3 kWh per cycle
+
+Semi-Automatic: 0.9 kWh per cycle
+
+TV: size-based power consumption
+
+Computer: 120 W per device
+
+7. Assuming we get gross energy consumption through state, create a agent that applies climate & insulation adjustments to that value. Consider the following 
+
+1. Climate zone (climate_zone) - Possible values - Hot & Dry, Temperate, Hot & Humid, Composite, Cold
+2. Insulation quality (insulation_quality) - Possible Values - Excellent, Good, Average, Poor
+
+Refer to the agents attached
+
+
+8 & 9 
+Create an agent that calculates net grid draw by considering the following
+1.Daily energy consumption in kwh from state.profile_data.daily_energy_consumption_kWh 
+2. If the user has how many solar panels installed, get that from state.profile_data.has_solar_panels and  their average battery capacity in kWp from state.profile_data.solar_capacity_kWp
+
+Then calcuate the monthly bill from the net grid draw by multiplying the net grid draw per day by 30.
+
+Add the net grid draw value and monthly bill to state.
+
+make fair assumptions only, if needed. Report them back in response. Refer to attached agents for reference
+
+
+10.
+
+Build an agent that get household profile data in state.profile_data. Given a dataset in csv which has data foor many other households, find similar households and compare their consumption.
+
+The columns in the dataset are :
+house_type,num_bedrooms,floor_area_sqft,num_floors,num_occupants,num_adults,num_children,climate_zone,city_tier,insulation_quality,window_type,roof_type,has_ac,num_ac_units,ac_star_rating,ac_usage_hrs_per_day,num_ceiling_fans,num_led_bulbs,num_cfl_bulbs,num_incandescent_bulbs,avg_lighting_hrs_per_day,water_heater_type,water_heater_capacity_L,water_heater_usage_hrs_per_day,has_refrigerator,fridge_capacity_L,fridge_star_rating,has_microwave,has_electric_stove,has_dishwasher,dishwasher_cycles_per_week,has_washing_machine,washing_machine_type,washing_cycles_per_week,has_dryer,num_tvs,tv_screen_size_inch,tv_usage_hrs_per_day,num_computers,computer_usage_hrs_per_day,has_solar_panels,solar_capacity_kWp,has_battery_storage,battery_capacity_kWh,daily_energy_consumption_kWh,monthly_energy_consumption_kWh,estimated_peak_load_kW
+
+The data in stae.profile_data for the current household has 
+house_type,num_bedrooms,floor_area_sqft,num_floors,num_occupants,num_adults,num_children,climate_zone,city_tier,insulation_quality,window_type,roof_type,has_ac,num_ac_units,ac_star_rating,ac_usage_hrs_per_day,num_ceiling_fans,water_heater_type,water_heater_capacity_L,water_heater_usage_hrs_per_day,has_refrigerator,fridge_capacity_L,fridge_star_rating,has_microwave,has_dishwasher,dishwasher_cycles_per_week,has_washing_machine,washing_machine_type,washing_cycles_per_week,has_dryer,num_tvs,tv_screen_size_inch,tv_usage_hrs_per_day,num_computers,computer_usage_hrs_per_day,has_solar_panels,solar_capacity_kWp,has_battery_storage,battery_capacity_kWh
+
+use pandas whereever possible.
+From the above columns determine which information is needed to compare energy consumption and respot back those columns in reponse. 
+
+Refer to the agents attached for coding pattern. Don't make it too complex. Basic validations are sufficient. This is just for a demo
+
+11.
+Create and agent that 
+Runs Solar ROI Analysis — Evaluate 1, 3, 5, and 10 kWp solar scenarios for annual savings, capital cost, payback period, and 25-year net savings.
+
+This is for the household information in state.profile_data. state has the following info
+
+houshold information in profile_data which has house_type,num_bedrooms,floor_area_sqft,num_floors,num_occupants,num_adults,num_children,climate_zone,city_tier,insulation_quality,window_type,roof_type,has_ac,num_ac_units,ac_star_rating,ac_usage_hrs_per_day,num_ceiling_fans,water_heater_type,water_heater_capacity_L,water_heater_usage_hrs_per_day,has_refrigerator,fridge_capacity_L,fridge_star_rating,has_microwave,has_dishwasher,dishwasher_cycles_per_week,has_washing_machine,washing_machine_type,washing_cycles_per_week,has_dryer,num_tvs,tv_screen_size_inch,tv_usage_hrs_per_day,num_computers,computer_usage_hrs_per_day,has_solar_panels,solar_capacity_kWp,has_battery_storage,battery_capacity_kWh
+
+state also has daily_energy_consumption_kWh, adjusted_daily_energy_kWh, energy_adjustment_climate_zone ( Possible values - Hot & Dry, Temperate, Hot & Humid, Composite, Cold), energy_adjustment_insulation_quality (Possible Values - Excellent, Good, Average, Poor),
+ energy_adjustment_factors (sample value - {
+      "climate_factor": 1.05,
+      "insulation_factor": 1.0,
+      "combined_factor": 1.05
+    }) ,solar_generation_kWh_per_day,net_grid_draw_kWh_per_day, monthly_grid_bill_kWh
+
+    Refer to the agents attached for coding pattern. Don't make it too complex. Basic validations are sifficient. make fair assumptions only, if needed. Report them back in response.
+
+12.
+
+Create an agent that:
+Generates Energy-Saving Recommendations — Produce a prioritised, quantified list of improvement actions (LED upgrades, AC thermostat settings, solar water heater switch, insulation improvements) tailored to the household's profile.
+
+The household's data is in state.profile_data which has the following information
+
+houshold information in profile_data which has house_type,num_bedrooms,floor_area_sqft,num_floors,num_occupants,num_adults,num_children,climate_zone,city_tier,insulation_quality,window_type,roof_type,has_ac,num_ac_units,ac_star_rating,ac_usage_hrs_per_day,num_ceiling_fans,water_heater_type,water_heater_capacity_L,water_heater_usage_hrs_per_day,has_refrigerator,fridge_capacity_L,fridge_star_rating,has_microwave,has_dishwasher,dishwasher_cycles_per_week,has_washing_machine,washing_machine_type,washing_cycles_per_week,has_dryer,num_tvs,tv_screen_size_inch,tv_usage_hrs_per_day,num_computers,computer_usage_hrs_per_day,has_solar_panels,solar_capacity_kWp,has_battery_storage,battery_capacity_kWh
+
+state also has daily_energy_consumption_kWh, adjusted_daily_energy_kWh, energy_adjustment_climate_zone ( Possible values - Hot & Dry, Temperate, Hot & Humid, Composite, Cold), energy_adjustment_insulation_quality (Possible Values - Excellent, Good, Average, Poor),
+energy_adjustment_factors (sample value - {
+"climate_factor": 1.05,
+"insulation_factor": 1.0,
+"combined_factor": 1.05
+}) ,solar_generation_kWh_per_day,net_grid_draw_kWh_per_day, monthly_grid_bill_kWh
+grid_draw_assumptions,
+solar_roi_analysis - ( Sample -{'base_energy_source': 'adjusted_daily_energy_kWh', 'base_daily_energy_kWh': 42.73, 'grid_cost_per_kWh': 1.0, 'capital_cost_per_kWp': 700.0, 'scenarios': [{'solar_capacity_kWp': 1.0, 'daily_generation_kWh': 5.5, 'annual_generation_kWh': 2007.5, 'annual_energy_offset_kWh': 2007.5, 'annual_savings': 2007.5, 'capital_cost': 700.0, 'payback_years': 0.35, 'net_savings_25y': 49487.5}, {'solar_capacity_kWp': 3.0, 'daily_generation_kWh': 16.5, 'annual_generation_kWh': 6022.5, 'annual_energy_offset_kWh': 6022.5, 'annual_savings': 6022.5, 'capital_cost': 2100.0, 'payback_years': 0.35, 'net_savings_25y': 148462.5}, {'solar_capacity_kWp': 5.0, 'daily_generation_kWh': 27.5, 'annual_generation_kWh': 10037.5, 'annual_energy_offset_kWh': 10037.5, 'annual_savings': 10037.5, 'capital_cost': 3500.0, 'payback_years': 0.35, 'net_savings_25y': 247437.5}, {'solar_capacity_kWp': 10.0, 'daily_generation_kWh': 55.0, 'annual_generation_kWh': 20075.0, 'annual_energy_offset_kWh': 15596.08, 'annual_savings': 15596.09, 'capital_cost': 7000.0, 'payback_years': 0.45, 'net_savings_25y': 382902.13}], }} ),
+similar_households_comparison - (Derive info from compare_against_similar_householda_agent.py file)
+
