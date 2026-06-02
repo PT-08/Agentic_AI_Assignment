@@ -8,42 +8,33 @@ from langgraph.types import Command
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from state import HouseholdProfileState
 
-VALID_HOUSE_TYPES = ["Apartment", "Villa", "Bungalow", "Townhouse", "Penthouse"]
-VALID_CLIMATE_ZONES = ["Hot & Dry", "Hot & Humid", "Composite", "Temperate", "Cold"]
-VALID_CITY_TIERS = ["Tier 1", "Tier 2", "Tier 3"]
-
-class CollectHouseholdProfileAgent:
+class AssessBuildingEnvelopeAgent:
     def __init__(self):
-        self.agent_name = "CollectHouseholdProfileAgent"
+        self.agent_name = "AssessBuildingEnvelopeAgent"
 
     def process(self, state: HouseholdProfileState) -> Command:
-        profile_data = dict(state.get("profile_data", {}))
+        building_envelope = dict(state.get("building_envelope", {}))
         messages = list(state.get("messages", []))
         errors = list(state.get("errors", []))
         updates: Dict[str, Any] = {"current_agent": self.agent_name}
 
         try:
-            profile_data["house_type"] = self._prompt_choice(
-                "Select house type:", VALID_HOUSE_TYPES
+            building_envelope["insulation_quality"] = self._prompt_choice(
+                "Select insulation quality:",
+                ["Excellent", "Good", "Average", "Poor"],
             )
-            profile_data["climate_zone"] = self._prompt_choice(
-                "Select climate zone:", VALID_CLIMATE_ZONES
+            building_envelope["window_type"] = self._prompt_choice(
+                "Select window type:",
+                ["Single Pane", "Double Pane", "Triple Pane"],
             )
-            profile_data["city_tier"] = self._prompt_choice(
-                "Select city tier:", VALID_CITY_TIERS
-            )
-            profile_data["num_bedrooms"] = self._prompt_int(
-                "Enter number of bedrooms:", min_value=1
-            )
-            profile_data["floor_area_sqft"] = self._prompt_int(
-                "Enter floor area in square feet:", min_value=1
+            building_envelope["roof_type"] = self._prompt_choice(
+                "Select roof type:",
+                ["Sloped Tiled", "Flat RCC", "Insulated RCC"],
             )
 
-            updates["profile_data"] = profile_data
+            updates["building_envelope"] = building_envelope
             updates["workflow_stage"] = "In progress"
-            messages.append(
-                f"[SUCCESS] Collected profile for {profile_data['house_type']} with {profile_data['num_bedrooms']} bedrooms."
-            )
+            messages.append("[SUCCESS] Building envelope details captured.")
         except Exception as exc:
             errors.append(str(exc))
             updates["workflow_stage"] = "Error"
@@ -56,7 +47,7 @@ class CollectHouseholdProfileAgent:
     def route(self, state: HouseholdProfileState) -> str:
         if state.get("errors"):
             return "END"
-        return "capture_occupancy_details"
+        return "check_renewable_energy_assets"
 
     def _colored_input(self, prompt: str) -> str:
         return input(f"[1;36m{prompt}[0m ")
@@ -77,15 +68,3 @@ class CollectHouseholdProfileAgent:
                     if normalized == option.lower():
                         return option
             print("Invalid selection. Please choose a valid option.")
-
-    def _prompt_int(self, prompt: str, min_value: int = 0) -> int:
-        while True:
-            answer = self._colored_input(prompt)
-            try:
-                value = int(answer)
-                if value < min_value:
-                    print(f"Please enter a number greater than or equal to {min_value}.")
-                    continue
-                return value
-            except ValueError:
-                print("Invalid number. Please enter a whole number.")
