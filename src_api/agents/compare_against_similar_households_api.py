@@ -1,6 +1,6 @@
 import pandas as pd
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from langgraph.graph import END
 from langgraph.types import Command
@@ -9,8 +9,9 @@ from src_api.state import HouseholdProfileState
 
 
 class APICompareAgainstSimilarHouseholdsAgent:
-    def __init__(self):
+    def __init__(self, next_node: Optional[str] = None):
         self.agent_name = "CompareAgainstSimilarHouseholdsAgent"
+        self.next_node = next_node
         self.comparison_columns = [
             'house_type', 'num_bedrooms', 'floor_area_sqft', 'num_floors',
             'num_occupants', 'num_adults', 'num_children',
@@ -183,4 +184,6 @@ class APICompareAgainstSimilarHouseholdsAgent:
     def route(self, state: HouseholdProfileState):
         if state.get('errors'):
             return END
-        return END
+        if self.next_node is None:
+            return END
+        return self.next_node
