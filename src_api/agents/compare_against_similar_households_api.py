@@ -71,7 +71,7 @@ class APICompareAgainstSimilarHouseholdsAgent:
 
             matches = self._find_similar_households(prepared, profile_series)
             summary = self._build_summary(matches, profile_series)
-
+            print("----------------",summary)
             updates['comparison_summary'] = summary
             updates['workflow_stage'] = 'Complete'
             messages.append('[SUCCESS] Similar household comparison completed.')
@@ -105,6 +105,9 @@ class APICompareAgainstSimilarHouseholdsAgent:
 
     def _extract_profile_series(self, profile_data: Dict[str, Any]) -> Any:
         profile = {col: profile_data.get(col, None) for col in self.comparison_columns}
+        if profile.get('ac_star_rating') is None and profile_data.get('ac_star_rating') is not None:
+            profile['ac_star_rating'] = profile_data.get('ac_star_rating')
+
         numeric_values = {col: float(profile.get(col, 0) or 0) for col in self.numeric_features}
         categorical_values = {col: str(profile.get(col)).strip() for col in self.categorical_filters if profile.get(col) is not None}
         if 'daily_energy_consumption_kWh' in profile_data:

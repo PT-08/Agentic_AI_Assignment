@@ -1,0 +1,39 @@
+{
+  "profile_data": {
+    "house_type": "Apartment",
+    "num_bedrooms": 2,
+    "climate_zone": "Hot & Dry",
+    "city_tier": "Tier 3",
+    "num_occupants": 3,
+    "has_ac": 1,
+    "num_ac_units": 2,
+    "ac_start_rating": 5,
+    "ac_usage_hrs_per_day": 10.0,
+    "num_ceiling_fans": 4,
+    "water_heater_type": "Solar + Backup",
+    "water_heater_capacity_L": 15,
+    "water_heater_usage_hrs_per_day": 4.0,
+    "has_refrigerator": 1,
+    "fridge_capacity_L": 330,
+    "fridge_star_rating": 4,
+    "has_washing_machine": 1,
+    "washing_machine_type": "Top Load",
+    "washing_cycles_per_week": 9,
+    "num_computers": 2,
+    "computer_usage_hrs_per_day": 15.0,
+    "num_tvs": 1,
+    "tv_screen_size_inch": 55,
+    "tv_usage_hrs_per_day": 5.0,
+    "has_dishwasher": 1,
+    "dishwasher_cycles_per_week": 9,
+    "has_microwave": 1,
+    "has_solar_panels": 1,
+    "solar_capacity_kWp": 2,
+    "has_battery_storage": 0,
+    "battery_capacity_kWh": 0
+  },
+  "renewable_assets": {},
+  "electricity_tariff_per_kWh": 0.12
+}
+
+

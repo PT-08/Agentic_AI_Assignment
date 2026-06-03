@@ -1,4 +1,10 @@
 import os
+import sys
+from pathlib import Path
+
+# Ensure the workspace root is in sys.path for imports to work
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from fastapi import FastAPI
 from src_api.routes import router
 

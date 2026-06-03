@@ -30,7 +30,7 @@ def make_initial_state(profile_data: Dict[str, Any], renewable_assets: Optional[
     return {
         "profile_data": {**profile_data},
         "occupancy_data": {},
-        "appliance_data": {},
+        "appliance_data": {**profile_data},
         "building_envelope": {},
         "renewable_assets": dict(renewable_assets or {}),
         "energy_metrics": {},
@@ -101,6 +101,7 @@ def solar_roi_analysis(payload: Dict[str, Any]) -> Dict[str, Any]:
 
 @router.post("/recommendations")
 def energy_recommendations(payload: Dict[str, Any]) -> Dict[str, Any]:
+    print("----------------------------------------------------------------------------------------")
     profile_data = payload.get("profile_data", {})
     renewable_assets = payload.get("renewable_assets", {})
     tariff = payload.get("electricity_tariff_per_kWh") or profile_data.get("electricity_tariff_per_kWh")
@@ -109,19 +110,22 @@ def energy_recommendations(payload: Dict[str, Any]) -> Dict[str, Any]:
         raise HTTPException(status_code=400, detail="Missing electricity_tariff_per_kWh in request payload.")
 
     initial_state = make_initial_state(profile_data, renewable_assets)
-    agent_a = APICalculateGridDrawAndExpenseAgent(tariff=tariff, next_node="solar_roi_analysis")
-    agent_b = APISolarROIAnalysisAgent(next_node="energy_recommendations")
-    agent_c = APIEnergyRecommendationsAgent()
+    agent_a = APICalculateGridDrawAndExpenseAgent(tariff=tariff, next_node="compare_against_similar_households")
+    agent_b = APICompareAgainstSimilarHouseholdsAgent(next_node="solar_roi_analysis")
+    agent_c = APISolarROIAnalysisAgent(next_node="energy_recommendations")
+    agent_d = APIEnergyRecommendationsAgent()
 
     graph = build_api_graph(
         {
             "calculate_grid_draw_and_expense": _wrap_agent_processor(agent_a),
-            "solar_roi_analysis": _wrap_agent_processor(agent_b),
-            "energy_recommendations": _wrap_agent_processor(agent_c),
+            "compare_against_similar_households": _wrap_agent_processor(agent_b),
+            "solar_roi_analysis": _wrap_agent_processor(agent_c),
+            "energy_recommendations": _wrap_agent_processor(agent_d),
         },
         start_node="calculate_grid_draw_and_expense",
         edges=[
-            ("calculate_grid_draw_and_expense", "solar_roi_analysis"),
+            ("calculate_grid_draw_and_expense", "compare_against_similar_households"),
+            ("compare_against_similar_households", "solar_roi_analysis"),
             ("solar_roi_analysis", "energy_recommendations"),
         ],
     )
