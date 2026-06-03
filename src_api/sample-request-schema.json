@@ -33,7 +33,11 @@
     "battery_capacity_kWh": 0
   },
   "renewable_assets": {},
+  "cmd":"curl -s -X POST http://127.0.0.1:8000/api/recommendations -H 'Content-Type: application/json' -d ''",
   "electricity_tariff_per_kWh": 0.12
 }
+
+
+
 
 
