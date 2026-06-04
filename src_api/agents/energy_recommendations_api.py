@@ -29,6 +29,7 @@ class APIEnergyRecommendationsAgent:
                 "You are an expert energy efficiency advisor. Generate exactly 4-6 practical, prioritized, quantified energy-saving recommendations "
                 "tailored to the household profile provided. For each action include these structured fields: title, description, estimated_monthly_kwh_savings, "
                 "estimated_monthly_cost_savings, implementation_cost, priority (High/Medium/Low), and confidence_score (0-1). "
+                "Check solar_roi field for various solar options and include solar recommendations if ROI is favorable."
                 "Use energy adjustment factors, climate/insulation impacts, and solar energy assumptions when estimating savings. If a feature is already efficient, "
                 "acknowledge it without repeating it as a new recommendation. Return only valid JSON with a top-level key 'recommendations' containing a list of objects."
             )

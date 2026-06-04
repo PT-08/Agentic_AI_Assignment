@@ -72,7 +72,6 @@ class APICompareAgainstSimilarHouseholdsAgent:
 
             matches = self._find_similar_households(prepared, profile_series)
             summary = self._build_summary(matches, profile_series)
-            print("----------------",summary)
             updates['comparison_summary'] = summary
             updates['workflow_stage'] = 'Complete'
             messages.append('[SUCCESS] Similar household comparison completed.')

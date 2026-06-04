@@ -101,7 +101,6 @@ def solar_roi_analysis(payload: Dict[str, Any]) -> Dict[str, Any]:
 
 @router.post("/recommendations")
 def energy_recommendations(payload: Dict[str, Any]) -> Dict[str, Any]:
-    print("----------------------------------------------------------------------------------------")
     profile_data = payload.get("profile_data", {})
     renewable_assets = payload.get("renewable_assets", {})
     tariff = payload.get("electricity_tariff_per_kWh") or profile_data.get("electricity_tariff_per_kWh")
