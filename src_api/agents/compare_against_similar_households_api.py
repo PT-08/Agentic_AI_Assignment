@@ -166,6 +166,26 @@ class APICompareAgainstSimilarHouseholdsAgent:
         current_daily = profile_series.get('daily_energy_consumption_kWh')
         current_monthly = profile_series.get('monthly_energy_consumption_kWh')
 
+        
+    # ✅ Percentile calculation
+        def calculate_percentile(value, series):
+            if value is None:
+                return None
+            count = (series < value).sum()
+            percentile = (count / len(series)) * 100
+            return round(percentile, 2)
+
+        daily_percentile = calculate_percentile(
+            current_daily,
+            matches['daily_energy_consumption_kWh']
+        )
+
+        monthly_percentile = calculate_percentile(
+            current_monthly,
+            matches['monthly_energy_consumption_kWh']
+        )
+
+
         return {
             'comparison_columns': self.comparison_columns,
             'similar_households_found': len(matches),
@@ -174,9 +194,13 @@ class APICompareAgainstSimilarHouseholdsAgent:
             'peer_average_monthly_kWh': average_monthly,
             'target_daily_kWh': float(current_daily) if current_daily is not None else None,
             'target_monthly_kWh': float(current_monthly) if current_monthly is not None else None,
+            'daily_percentile': daily_percentile,
+            'monthly_percentile': monthly_percentile,
             'notes': (
                 "The comparison uses occupancy, appliance, building envelope, and renewable asset "
                 "features from the profile to rank households with similar energy use patterns."
+                "Percentile indicates how your household compares to similar households. "
+                "Higher percentile means higher energy consumption relative to peers."
             )
         }
 
