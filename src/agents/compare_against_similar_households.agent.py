@@ -197,12 +197,12 @@ class CompareAgainstSimilarHouseholdsAgent:
             'target_monthly_kWh': float(current_monthly) if current_monthly is not None else None,            
             'daily_percentile': daily_percentile,
             'monthly_percentile': monthly_percentile,
-            'notes': (
+            'notes': [
                 "The comparison uses occupancy, appliance, building envelope, and renewable asset "
                 "features from the profile to rank households with similar energy use patterns."
                 "Percentile indicates how your household compares to similar households. "
                 "Higher percentile means higher energy consumption relative to peers."
-            )
+            ]
         }
 
     def route(self, state: HouseholdProfileState) -> str:
