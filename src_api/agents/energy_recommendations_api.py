@@ -80,7 +80,6 @@ class APIEnergyRecommendationsAgent:
             if not api_key:
                 raise RuntimeError("OPENAI_API_KEY is not set in environment variables.") 
             
-            
             client = OpenAI(api_key=api_key)
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
