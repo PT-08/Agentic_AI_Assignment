@@ -15,8 +15,8 @@ router = APIRouter(prefix="/api", tags=["household-energy"])
 
 def build_api_graph(node_mapping: Dict[str, Any], start_node: str, edges: Optional[list[tuple[str, str]]] = None):
     graph = StateGraph(HouseholdProfileState)
-    for node_name, processor in node_mapping.items():
-        graph.add_node(node_name, processor)
+    for node_name, method in node_mapping.items():
+        graph.add_node(node_name, method)
 
     graph.add_edge(START, start_node)
     if edges:
@@ -102,24 +102,40 @@ def solar_roi_analysis(payload: Dict[str, Any]) -> Dict[str, Any]:
 @router.post("/recommendations")
 def energy_recommendations(payload: Dict[str, Any]) -> Dict[str, Any]:
     profile_data = payload.get("profile_data", {})
-    renewable_assets = payload.get("renewable_assets", {})
+    #renewable_assets = payload.get("renewable_assets", {})
     tariff = payload.get("electricity_tariff_per_kWh") or profile_data.get("electricity_tariff_per_kWh")
 
     if tariff is None:
         raise HTTPException(status_code=400, detail="Missing electricity_tariff_per_kWh in request payload.")
 
-    initial_state = make_initial_state(profile_data, renewable_assets)
+    initial_state = {
+        "profile_data": {**profile_data},
+        "occupancy_data": {},
+        "appliance_data": {**profile_data},
+        "building_envelope": {},
+        "renewable_assets":{},
+        "energy_metrics": {},
+        "comparison_summary": {},
+        "solar_roi": {},
+        "recommendations": {},
+        "messages": [],
+        "errors": [],
+        "current_agent": None,
+        "workflow_stage": "Start",
+    }
+    
     agent_a = APICalculateGridDrawAndExpenseAgent(tariff=tariff, next_node="compare_against_similar_households")
     agent_b = APICompareAgainstSimilarHouseholdsAgent(next_node="solar_roi_analysis")
     agent_c = APISolarROIAnalysisAgent(next_node="energy_recommendations")
     agent_d = APIEnergyRecommendationsAgent()
 
+    
     graph = build_api_graph(
         {
-            "calculate_grid_draw_and_expense": _wrap_agent_processor(agent_a),
-            "compare_against_similar_households": _wrap_agent_processor(agent_b),
-            "solar_roi_analysis": _wrap_agent_processor(agent_c),
-            "energy_recommendations": _wrap_agent_processor(agent_d),
+            "calculate_grid_draw_and_expense": agent_a.calculate,
+            "compare_against_similar_households": agent_b.compare,
+            "solar_roi_analysis": agent_c.analyze,
+            "energy_recommendations": agent_d.getRecommendations,
         },
         start_node="calculate_grid_draw_and_expense",
         edges=[

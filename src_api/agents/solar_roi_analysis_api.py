@@ -11,7 +11,7 @@ class APISolarROIAnalysisAgent:
         self.agent_name = "SolarROIAnalysisAgent"
         self.next_node = next_node
 
-    def process(self, state: HouseholdProfileState) -> Command:
+    def analyze(self, state: HouseholdProfileState) -> Command:
         energy_metrics = dict(state.get("energy_metrics", {}))
         profile_data = dict(state.get("profile_data", {}))
         renewable_assets = dict(state.get("renewable_assets", {}))

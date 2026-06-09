@@ -6,12 +6,22 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from src_api.routes import router
 
 app = FastAPI(
     title="Household Energy Workflow API",
     description="FastAPI wrapper for the Agentic AI Assignment langgraph workflows.",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_origin_regex=r"https?://.*",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(router)

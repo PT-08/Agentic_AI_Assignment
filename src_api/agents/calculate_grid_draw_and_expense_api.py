@@ -12,7 +12,7 @@ class APICalculateGridDrawAndExpenseAgent:
         self.api_tariff = float(tariff)
         self.next_node = next_node
 
-    def process(self, state: HouseholdProfileState) -> Command:
+    def calculate(self, state: HouseholdProfileState) -> Command:
         profile_data = dict(state.get("profile_data", {}))
         messages = list(state.get("messages", []))
         errors = list(state.get("errors", []))
@@ -35,6 +35,12 @@ class APICalculateGridDrawAndExpenseAgent:
                 "computer_kWh_per_day": self._calc_computers(profile_data),
             }
             daily_consumption = round(sum(energy_breakdown.values()), 3)
+            
+            ## Applying insulation adjustments 
+            climate = (profile_data.get("climate_zone") or "").strip().lower()
+            insulation_quality = str(profile_data.get("insulation_quality", "Average"))
+            (adjusted, combined_factor, climate_factor, insulation_factor) = self._apply_insulation_adjustments(daily_consumption=daily_consumption, climate_zone=climate, insulation_quality=insulation_quality)
+            
 
             # Calculate solar generation
             assumptions: List[str] = [
@@ -47,9 +53,9 @@ class APICalculateGridDrawAndExpenseAgent:
                 "Washing machine assumed 1.3 kWh per cycle for Top Load and 1.0 kWh otherwise.",
                 "TV energy estimated by screen size band and daily usage hours.",
                 "Computers assumed 120 W each while running.",
+                "Applied climate factor {climate_factor:.3f} and insulation factor {insulation_factor:.3f}."
             ]
 
-            climate = (profile_data.get("climate_zone") or "").strip().lower()
             peak_sun = self._peak_sun_hours_for_climate(climate)
             assumptions.append(
                 f"Assume peak sun hours = {peak_sun} for climate zone '{profile_data.get('climate_zone')}'."
@@ -71,6 +77,11 @@ class APICalculateGridDrawAndExpenseAgent:
             energy_metrics = {
                 "energy_breakdown": energy_breakdown,
                 "daily_energy_consumption_kWh": daily_consumption,
+                "monthly_energy_consumption_kWh": daily_consumption * 30,
+                "adjusted_daily_energy_kWh": adjusted,
+                "climate_factor": round(climate_factor, 3),
+                "insulation_factor": round(insulation_factor, 3),
+                "combined_factor": round(combined_factor, 3),
                 "solar_generation_kWh_per_day": round(solar_kwh, 3),
                 "solar_peak_sun_hours": peak_sun,
                 "net_grid_draw_kWh_per_day": round(net_draw, 3),
@@ -189,6 +200,34 @@ class APICalculateGridDrawAndExpenseAgent:
         }
         return mapping.get(climate_zone.lower(), 4.5)
 
+    def _apply_insulation_adjustments(self, daily_consumption: float, climate_zone: str, insulation_quality) -> float:
+        climate_factor = self._climate_factor(climate_zone)
+        insulation_factor = self._insulation_factor(insulation_quality)
+        combined_factor = climate_factor * insulation_factor
+        adjusted = round(daily_consumption * combined_factor, 3)
+        return (adjusted, combined_factor, climate_factor, insulation_factor)
+        
+    def _climate_factor(self, climate_zone: str) -> float:
+        mapping = {
+            "hot & dry": 1.05,
+            "hot & humid": 1.10,
+            "temperate": 1.00,
+            "composite": 1.02,
+            "cold": 1.15,
+        }
+        return mapping.get(climate_zone.strip().lower(), 1.00)
+
+    def _insulation_factor(self, insulation_quality: str) -> float:
+        mapping = {
+            "excellent": 0.90,
+            "good": 0.95,
+            "average": 1.00,
+            "poor": 1.10,
+        }
+        return mapping.get(insulation_quality.strip().lower(), 1.00)
+    
+       
+        
     def _estimate_solar_generation_kwh_per_day(self, solar_capacity_kWp: float, peak_sun_hours: float) -> float:
         try:
             return float(solar_capacity_kWp) * float(peak_sun_hours)

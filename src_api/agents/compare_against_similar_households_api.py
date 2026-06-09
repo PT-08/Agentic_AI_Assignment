@@ -50,12 +50,20 @@ class APICompareAgainstSimilarHouseholdsAgent:
             'has_battery_storage', 'battery_capacity_kWh'
         ]
 
-    def process(self, state: HouseholdProfileState) -> Command:
+    def compare(self, state: HouseholdProfileState) -> Command:
         profile_data = state.get('profile_data') or {}
         messages = list(state.get('messages', []))
         errors = list(state.get('errors', []))
         updates: Dict[str, Any] = {"current_agent": self.agent_name}
-
+        energy_metrics = state.get('energy_metrics') or {}
+        daily = energy_metrics.get('daily_energy_consumption_kWh')
+        monthly = energy_metrics.get('monthly_energy_consumption_kWh')
+        # Only add keys if present to avoid KeyError and preserve existing values
+        if daily is not None:
+            profile_data['daily_energy_consumption_kWh'] = daily
+        if monthly is not None:
+            profile_data['monthly_energy_consumption_kWh'] = monthly
+            
         try:
             if not profile_data:
                 raise ValueError("No profile data found in state.profile_data.")
@@ -94,6 +102,11 @@ class APICompareAgainstSimilarHouseholdsAgent:
 
         subset = dataset[comparison_columns].copy()
         for col in self.numeric_features:
+            if col in subset.columns:
+                subset[col] = pd.to_numeric(subset[col], errors='coerce').fillna(0)
+
+        # Ensure energy metric columns are numeric as well
+        for col in ['daily_energy_consumption_kWh', 'monthly_energy_consumption_kWh']:
             if col in subset.columns:
                 subset[col] = pd.to_numeric(subset[col], errors='coerce').fillna(0)
 
@@ -163,16 +176,25 @@ class APICompareAgainstSimilarHouseholdsAgent:
 
         average_daily = float(matches['daily_energy_consumption_kWh'].mean()) if not matches.empty else 0.0
         average_monthly = float(matches['monthly_energy_consumption_kWh'].mean()) if not matches.empty else 0.0
-        current_daily = profile_series.get('daily_energy_consumption_kWh')
-        current_monthly = profile_series.get('monthly_energy_consumption_kWh')
+        current_daily = round(profile_series.get('daily_energy_consumption_kWh'), 3)
+        current_monthly = round(profile_series.get('monthly_energy_consumption_kWh'), 3)
 
         
     # ✅ Percentile calculation
         def calculate_percentile(value, series):
+            # Return 0.0 when value is missing or series is empty per preference
             if value is None:
-                return None
-            count = (series < value).sum()
-            percentile = (count / len(series)) * 100
+                return 0.0
+            s = series.dropna()
+            if s.empty:
+                return 0.0
+            # ensure numeric comparison
+            try:
+                v = float(value)
+            except Exception:
+                return 0.0
+            count = (s.astype(float) < v).sum()
+            percentile = (count / len(s)) * 100
             return round(percentile, 2)
 
         daily_percentile = calculate_percentile(
@@ -197,8 +219,7 @@ class APICompareAgainstSimilarHouseholdsAgent:
             'daily_percentile': daily_percentile,
             'monthly_percentile': monthly_percentile,
             'notes': [
-                "The comparison uses occupancy, appliance, building envelope, and renewable asset "
-                "features from the profile to rank households with similar energy use patterns."
+                "The comparison uses occupancy, appliance, building envelope, and renewable asset features from the profile to rank households with similar energy use patterns."
                 "Percentile indicates how your household compares to similar households. "
                 "Higher percentile means higher energy consumption relative to peers."
             ]
